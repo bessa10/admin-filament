@@ -6,12 +6,15 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
@@ -23,7 +26,17 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')
+                    ->reactive()
+                    ->afterStateUpdated(function($state, $set) {
+                        $state = Str::slug($state);
+                        $set('slug', $state);
+                    })
+                    ->label('Nome Produto'),
+                TextInput::make('description')->label('Descrição Produto'),
+                TextInput::make('price')->label('Preço Produto'),
+                TextInput::make('ammount')->label('Quantidade Produto'),
+                TextInput::make('slug')->disabled()
             ]);
     }
 
@@ -31,7 +44,10 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('name'),
+                TextColumn::make('price')->money('BRL'),
+                TextColumn::make('ammount'),
+                TextColumn::make('created_at')->date('d/m/Y H:i:s')
             ])
             ->filters([
                 //
